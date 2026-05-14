@@ -1,12 +1,12 @@
 try {
-  const context = AdaptavistBridgeContext.context || {};
-  console.log("Bridge Context:", JSON.stringify(context, null, 2));
+console.log(AdaptavistBridgeContext.context.issueKey);
 
-  if (context.issueKey) {
-    console.log("Issue Key:", context.issueKey);
-  } else {
-    console.warn("No issueKey found — panel may not be in an issue view.");
-  }
+AdaptavistBridge.request({
+    url: `/rest/api/2/issue/${AdaptavistBridgeContext.context.issueKey}`,
+    type: 'GET'
+}).then(issue => {
+    console.log('Issue Data:', issue);
+});
 } catch (error) {
   console.error("Error accessing AdaptavistBridgeContext:", error);
 }
