@@ -5,7 +5,6 @@ try {
 
   if (!issueKey) {
     console.warn("No issueKey found — panel may not be in an issue view.");
-    return;
   }
 
   console.log("ISSUE key:", issueKey);
