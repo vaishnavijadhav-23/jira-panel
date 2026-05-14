@@ -1,6 +1,6 @@
 console.log("Bridge Context:", AdaptavistBridgeContext.context);
-
-const context = AdaptavistBridgeContext.context;
+try{
+  const context = AdaptavistBridgeContext.context;
 
 console.log("Issue Key:", context.issueKey || "Not available");
 console.log("Project Key:", context.projectKey || "Not available");
@@ -19,3 +19,7 @@ AdaptavistBridge.request({
   console.error("Error fetching issue:", err);
   document.getElementById("issueInfo").innerText = "Unable to load issue details.";
 });
+
+}catch(error){
+  console.error("Error in fetching the AdaptavistBridgeContext : ",error)
+}
