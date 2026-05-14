@@ -1,5 +1,7 @@
 console.log("Bridge Context:", AdaptavistBridgeContext.context);
 
+console.log("Project Key : ",AdaptavistBridgeContext.context.projectKey)
+
 AdaptavistBridge.request({
   url: `/rest/api/2/issue/${AdaptavistBridgeContext.context.issueKey}`,
   type: 'GET'
