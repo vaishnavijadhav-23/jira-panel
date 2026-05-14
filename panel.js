@@ -1,6 +1,11 @@
 console.log("Bridge Context:", AdaptavistBridgeContext.context);
 
-console.log("Project Key : ",AdaptavistBridgeContext.context.projectKey)
+const context = AdaptavistBridgeContext.context;
+
+console.log("Issue Key:", context.issueKey || "Not available");
+console.log("Project Key:", context.projectKey || "Not available");
+console.log("Location:", context.location || "Not available");
+
 
 AdaptavistBridge.request({
   url: `/rest/api/2/issue/${AdaptavistBridgeContext.context.issueKey}`,
