@@ -6,7 +6,7 @@ AdaptavistBridge.request({
 })
 .then(issue => {
   document.getElementById("issueInfo").innerText =
-    `${issue.key} is a ${issue.fields.issueType.name} currently in status "${issue.fields.status.name}"`;
+    `${issue.key} is a ${issue.fields.issueTypes.name} currently in status "${issue.fields.status.name}"`;
 })
 .catch(err => {
   console.error("Error fetching issue:", err);
