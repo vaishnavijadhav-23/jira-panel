@@ -4,7 +4,7 @@ try {
   const issueKey = context.issueKey;
 
   if (!issueKey) {
-    console.warn("No issueKey found — panel may not be in an issue view.");
+    console.warn("No issueKey found — panel may not be in an issueView.");
   }
 
   console.log("ISSUE key:", issueKey);
