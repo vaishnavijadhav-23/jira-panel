@@ -7,7 +7,7 @@
 //   console.warn("No issueKey found — panel may not be in an issue view.");
 // }
 
-const context=AdaptavistBridgeContex.location;
+const context=AdaptavistBridgeContext.context.location;
 console.log("Context : ",context)
 
 console.log("Bridge Context:", AdaptavistBridgeContext.context);
