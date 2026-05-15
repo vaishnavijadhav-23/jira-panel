@@ -1,5 +1,5 @@
 try {
- console.log(window.AdaptavistBridgeContext.context);
+ console.log("Context : ",window.AdaptavistBridgeContext.context);
   const context=window.AdaptavistBridgeContext.context
   const issueKey = context.issueKey;
 
