@@ -1,1 +1,1 @@
-console.log("Bridge Context:", JSON.stringify(window.AdaptavistBridgeContext.context, null, 2));
+console.log("Bridge Context:", window.AdaptavistBridgeContext.context);
