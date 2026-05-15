@@ -1,5 +1,5 @@
 try {
-  const context = AdaptavistBridgeContext.context || {};
+  const context = window.AdaptavistBridgeContext.context || {};
     console.log("Bridge Context : ",context);
   const issueKey = context.issueKey;
 
