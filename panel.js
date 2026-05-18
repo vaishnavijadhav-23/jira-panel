@@ -16,6 +16,7 @@ AdaptavistBridge.request({
   url: `/rest/api/2/issue/NP-1`,
   type: 'GET'
 })
+  
 .then(issue => {
   // Correct property: issue.fields.issuetype.name
   document.getElementById("issueInfo").innerText =
