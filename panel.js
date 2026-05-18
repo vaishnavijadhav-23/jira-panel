@@ -1,4 +1,4 @@
-const context=window.AdaptavistBridgeContext;
+const context=window.AdaptavistBridgeContext.context;
 console.log("Context : ",context)
 
 console.log("Bridge Context:", AdaptavistBridgeContext.context);
@@ -11,7 +11,7 @@ AdaptavistBridge.request({
 .then(issue => {
   // Correct property: issue.fields.issuetype.name
   document.getElementById("issueInfo").innerText =
-`${issue.key} is a currently in status"`;
+`${issue.key} is a currently in status`;
 })
 .catch(err => {
   console.error("Error fetching issue:", err);
