@@ -11,7 +11,7 @@ AdaptavistBridge.request({
 .then(issue => {
   // Correct property: issue.fields.issuetype.name
   document.getElementById("issueInfo").innerText =
-`${issue.key} is a currently in status "${issue.fields.status.name}"`;
+`${issue.key} is a currently in status"`;
 })
 .catch(err => {
   console.error("Error fetching issue:", err);
