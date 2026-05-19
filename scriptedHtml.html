@@ -3,203 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Issue Dashboard</title>
-
-    <script src="https://assets.hydrogen.sagittarius.connect.product.adaptavist.com/public/js/latest/bridge.js"></script>
-
+    <title>Jira Cloud Script Fragment with Adaptavist Bridge</title>
+    
+    <!-- Load the official Adaptavist Bridge library -->
+    <script src="https://assets.hydrogen.sagittarius.connect.product.adaptavist.com/public/js/bridge.js" async></script>
+    
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background: #f4f5f7;
-            padding: 12px;
+            background-color: transparent;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             margin: 0;
+            padding: 8px;
+            overflow: hidden;
         }
-
-        .card {
-            background: white;
-            border-radius: 12px;
-            padding: 18px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-        }
-
-        h2 {
-            margin-top: 0;
-            color: #172B4D;
-            font-size: 20px;
-        }
-
-        .info {
-            margin: 10px 0;
-            font-size: 14px;
-        }
-
-        .label {
-            font-weight: bold;
-            color: #5E6C84;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            margin-left: 6px;
-        }
-
-        .status {
-            background: #DEEBFF;
-            color: #0747A6;
-        }
-
-        .project {
-            background: #E3FCEF;
-            color: #006644;
-        }
-
-        .buttons {
-            margin-top: 16px;
+        .container {
             display: flex;
-            gap: 10px;
+            flex-direction: column;
+            gap: 8px;
         }
-
-        button {
+        .custom-btn {
+            background-color: #0052CC;
+            color: #FFFFFF;
             border: none;
-            padding: 10px 14px;
-            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 3px;
             cursor: pointer;
-            font-weight: bold;
-            font-size: 13px;
+            transition: background 0.1s ease;
+            width: 100%;
+            text-align: center;
         }
-
-        .refresh-btn {
-            background: #0052CC;
-            color: white;
-        }
-
-        .view-btn {
-            background: #36B37E;
-            color: white;
-        }
-
-        button:hover {
-            opacity: 0.9;
-        }
-
-        details {
-            margin-top: 16px;
+        .custom-btn:hover { background-color: #0065FF; }
+        .custom-btn:active { background-color: #0747A6; }
+        .custom-btn:disabled { background-color: #A5B4FC; cursor: not-allowed; }
+        #status-message {
             font-size: 12px;
-        }
-
-        pre {
-            background: #F7F8F9;
-            padding: 10px;
-            border-radius: 8px;
-            overflow-x: auto;
-        }
-
-        #loading {
-            color: #0052CC;
-            font-weight: bold;
+            color: #6B778C;
+            margin-top: 4px;
+            line-height: 1.4;
+            word-break: break-word;
         }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <h2>Issue Dashboard</h2>
-
-    <div id="loading">Loading issue details...</div>
-
-    <div id="content" style="display:none;">
-        <div class="info">
-            <span class="label">Issue:</span>
-            <span id="issueKey"></span>
-        </div>
-
-        <div class="info">
-            <span class="label">Project:</span>
-            <span id="projectKey" class="badge project"></span>
-        </div>
-
-        <div class="info">
-            <span class="label">Type:</span>
-            <span id="issueType"></span>
-        </div>
-
-        <div class="info">
-            <span class="label">Status:</span>
-            <span id="status" class="badge status"></span>
-        </div>
-
-        <div class="buttons">
-            <button class="refresh-btn" onclick="loadIssue()">Refresh</button>
-            <button class="view-btn" onclick="openIssue()">Open Issue</button>
-        </div>
-
-        <details>
-            <summary>View Context</summary>
-            <pre id="contextBox"></pre>
-        </details>
+    <div class="container">
+        <!-- UI Button component -->
+        <button id="action-btn" class="custom-btn" onclick="executeFragmentAction()">
+            🚀 Process Issue
+        </button>
+        <div id="status-message"></div>
     </div>
-</div>
 
-<script>
-    let currentContext = {};
+    <script>
+        function executeFragmentAction() {
+            const btn = document.getElementById('action-btn');
+            const statusDiv = document.getElementById('status-message');
+            
+            btn.disabled = true;
+            statusDiv.style.color = "#6B778C";
+            statusDiv.innerText = "Checking Adaptavist Bridge...";
 
-    function getContext() {
-        const params = new URLSearchParams(window.location.search);
-        const contextParam = params.get("context");
+            // Check if the Adaptavist Bridge library is loaded and ready
+            if (typeof window.AdaptavistBridge === 'undefined') {
+                statusDiv.style.color = "#DE350B";
+                statusDiv.innerText = "Error: Adaptavist Bridge not initialized yet.";
+                btn.disabled = false;
+                return;
+            }
 
-        if (contextParam) {
-            return JSON.parse(contextParam);
+            // Extract context data directly from the bridge object
+            const bridgeContext = window.AdaptavistBridge.context;
+            const issueKey = bridgeContext ? bridgeContext.issueKey : null;
+
+            if (!issueKey) {
+                statusDiv.style.color = "#DE350B";
+                statusDiv.innerText = "Error: Could not retrieve active Issue Key.";
+                btn.disabled = false;
+                return;
+            }
+
+            statusDiv.innerText = `Processing key: ${issueKey}...`;
+
+            // Setup your target ScriptRunner endpoint or external REST service
+            const endpointUrl = `https://atlassian.net{issueKey}`;
+
+            // Make a secure token-authorized request handled through Adaptavist's router
+            fetch(endpointUrl, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(res => {
+                if (res.ok) {
+                    statusDiv.style.color = "#36B37E";
+                    statusDiv.innerText = `Success! Action completed for ${issueKey}.`;
+                } else {
+                    throw new Error(`Server error: ${res.status}`);
+                }
+            })
+            .catch(err => {
+                statusDiv.style.color = "#DE350B";
+                statusDiv.innerText = "Error: Backend processing failed.";
+                btn.disabled = false;
+            });
         }
-        return {};
-    }
-
-    function loadIssue() {
-        currentContext = getContext();
-
-        document.getElementById("contextBox").innerText =
-            JSON.stringify(currentContext, null, 2);
-
-        if (!currentContext.issueKey) {
-            document.getElementById("loading").innerText =
-                "Issue key not found.";
-            return;
-        }
-
-        AdaptavistBridge.request({
-            url: `/rest/api/2/issue/${currentContext.issueKey}`,
-            type: 'GET'
-        })
-        .then(issue => {
-            document.getElementById("loading").style.display = "none";
-            document.getElementById("content").style.display = "block";
-
-            document.getElementById("issueKey").innerText = issue.key;
-            document.getElementById("projectKey").innerText =
-                issue.fields.project.key;
-            document.getElementById("issueType").innerText =
-                issue.fields.issuetype.name;
-            document.getElementById("status").innerText =
-                issue.fields.status.name;
-        })
-        .catch(error => {
-            console.error(error);
-            document.getElementById("loading").innerText =
-                "Unable to fetch issue.";
-        });
-    }
-
-    function openIssue() {
-        if (currentContext.issueKey) {
-            window.open(`/browse/${currentContext.issueKey}`, "_blank");
-        }
-    }
-
-    loadIssue();
-</script>
-
+    </script>
 </body>
 </html>
