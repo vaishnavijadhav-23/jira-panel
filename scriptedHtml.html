@@ -2,9 +2,7 @@
 <html lang="en">
 <head>
     <title>Issue Info Panel</title>
-
     <script src="https://assets.hydrogen.sagittarius.connect.product.adaptavist.com/public/js/latest/bridge.js"></script>
-
 </head>
 <body>
 
@@ -33,15 +31,12 @@
         issuesummary=issue.fields.summary;
         console.log("Issue response:", issue);
         console.log("BaseUrl : ",jiraBaseUrl)
-        
-
     })
     .catch(error => {
         console.error("API Error:", error);
         document.getElementById("status").innerText =
             "Unable to fetch issue details.";
     });
-
     
    document.getElementById("searchConfluence").addEventListener("click", () => {
   const searchUrl = `${jiraBaseUrl}/wiki/search?text=${encodeURIComponent(issuesummary)}`;
