@@ -19,10 +19,7 @@
     let issuekey;
     let issuesummary;
     let baseurl;
-
-    const baseUrl = window.location.origin;
-    console.log("baseUrl : ",baseUrl)
-    
+ 
     console.log("Bridge object:", window.AdaptavistBridge);
     console.log("Context:", window.AdaptavistBridgeContext);
    
@@ -49,7 +46,7 @@
 
     
    document.getElementById("searchConfluence").addEventListener("click", () => {
-  const searchUrl = `https://jadhavvaishnavi.atlassian.net/wiki/search?text=${encodeURIComponent(issuesummary)}`;
+  const searchUrl = `${jiraBaseUrl}/wiki/search?text=${encodeURIComponent(issuesummary)}`;
   window.open(searchUrl, "_blank");
 });
 </script>
