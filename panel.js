@@ -1,68 +1,49 @@
-// Log full context to see what's available
-console.log('Full Context:', JSON.stringify(AdaptavistBridgeContext.context));
+// Log context exactly as docs show
+console.log('Context:', AdaptavistBridgeContext.context);
 
 const context = AdaptavistBridgeContext.context;
 
-// Get issueId or issueKey from context
-const issueId = context.issueId || context.contentId || context.pageId;
-const issueKey = context.issueKey || context.entityKey;
+// entityKey is the main identifier from the docs
+const entityKey = context.entityKey;
+const contentId = context.contentId;
+const pageId    = context.pageId;
 
-console.log('Issue ID:', issueId);
-console.log('Issue Key:', issueKey);
+console.log('entityKey:', entityKey);
+console.log('contentId:', contentId);
+console.log('pageId:', pageId);
 
-// Fetch Issue data using issueKey or issueId
-const identifier = issueKey || issueId;
+// Use contentId or pageId to get page/issue data
+const identifier = contentId || pageId || entityKey;
 
 if (identifier) {
   AdaptavistBridge.request({
-    url: `/rest/api/3/issue/${identifier}`,
+    url: `/api/v2/pages/${identifier}`,   // Confluence API as per docs
     type: 'GET'
   })
-  .then(issue => {
-    console.log('Issue data:', issue);
+  .then(data => {
+    console.log('Data:', data);
 
-    // Display issue details
     document.getElementById('issueKey').textContent =
-      `Issue: ${issue.key}`;
-
+      `Content ID: ${data.id}`;
     document.getElementById('issueSummary').textContent =
-      `Summary: ${issue.fields.summary}`;
-
+      `Title: ${data.title}`;
     document.getElementById('issueStatus').textContent =
-      `Status: ${issue.fields.status.name}`;
-
-    document.getElementById('issueAssignee').textContent =
-      `Assignee: ${issue.fields.assignee
-        ? issue.fields.assignee.displayName
-        : 'Unassigned'}`;
-
-    document.getElementById('issuePriority').textContent =
-      `Priority: ${issue.fields.priority
-        ? issue.fields.priority.name
-        : 'None'}`;
-
-    document.getElementById('issueReporter').textContent =
-      `Reporter: ${issue.fields.reporter
-        ? issue.fields.reporter.displayName
-        : 'Unknown'}`;
-
+      `Status: ${data.status}`;
     document.getElementById('issueType').textContent =
-      `Type: ${issue.fields.issuetype.name}`;
-
+      `Type: ${context.contentType}`;
     document.getElementById('issueCreated').textContent =
-      `Created: ${new Date(issue.fields.created).toLocaleDateString()}`;
-
+      `Version: ${context.contentVersion}`;
     document.getElementById('issueUpdated').textContent =
-      `Updated: ${new Date(issue.fields.updated).toLocaleDateString()}`;
+      `Location: ${context.location}`;
   })
   .catch(err => {
-    console.error('Error fetching issue:', err);
+    console.error('Error:', err);
     document.getElementById('issueKey').textContent =
-      'Error loading issue data: ' + JSON.stringify(err);
+      'Error: ' + JSON.stringify(err);
   });
 
 } else {
-  console.warn('No issue identifier found in context');
+  // Show raw context for debugging
   document.getElementById('issueKey').textContent =
-    'No issue ID/Key found. Context: ' + JSON.stringify(context);
+    'Context empty. Raw: ' + JSON.stringify(context);
 }
