@@ -10,7 +10,7 @@
 
 <div>
     <p>Search Related Documents in confluence</p>
-    <button onclick="searchConfluence()" class="btn">Search Confluence Docs</button>
+    <button id="searchConfluence">Search Confluence Docs</button>
     <p id="status">Loading issue details...</p>
 </div>
 
@@ -31,6 +31,7 @@
         issuekey=issue.key;
         issuesummary=issue.fields.summary;
         console.log("Issue response:", issue);
+        console.log("Issue Summary : ",issuesummary)
      
         document.getElementById("status").innerText =
             ` Ready ${issue.key}`;
@@ -41,23 +42,10 @@
             "Unable to fetch issue details.";
     });
 
-    function searchConfluence(){
-        console.log("Enter in func ")
-        document.getElementById("status").innerText=
-            "searching..."
-
-        if (!issuesummary) {
-            alert("Issue data not loaded yet");
-            return;
-        }
-        
-        const query = encodeURIComponent(issuesummary);
-        
-          const confluenceUrl =
-            `https://jadhavvaishnavi.atlassian.net/wiki/dosearchsite.action?query=${query}`;
-        
-          window.open(confluenceUrl, "_blank");
-    }
+   document.getElementById("searchConfluence").addEventListener("click", () => {
+  const searchUrl = `https://yourcompany.atlassian.net/wiki/search?text=${encodeURIComponent(issuesummary)}`;
+  window.open(searchUrl, "_blank");
+});
 </script>
 
 </body>
