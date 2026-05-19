@@ -3,76 +3,202 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Issue Info Panel</title>
+    <title>Issue Dashboard</title>
 
-    <!-- Adaptavist Bridge -->
     <script src="https://assets.hydrogen.sagittarius.connect.product.adaptavist.com/public/js/latest/bridge.js"></script>
 
     <style>
         body {
             font-family: Arial, sans-serif;
-            padding: 12px;
             background: #f4f5f7;
+            padding: 12px;
+            margin: 0;
         }
 
         .card {
             background: white;
-            padding: 16px;
-            border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            padding: 18px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
         }
 
-        h3 {
+        h2 {
             margin-top: 0;
             color: #172B4D;
+            font-size: 20px;
         }
 
-        #issueInfo {
-            color: #0052CC;
+        .info {
+            margin: 10px 0;
             font-size: 14px;
+        }
+
+        .label {
             font-weight: bold;
+            color: #5E6C84;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 6px;
+        }
+
+        .status {
+            background: #DEEBFF;
+            color: #0747A6;
+        }
+
+        .project {
+            background: #E3FCEF;
+            color: #006644;
+        }
+
+        .buttons {
+            margin-top: 16px;
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            border: none;
+            padding: 10px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .refresh-btn {
+            background: #0052CC;
+            color: white;
+        }
+
+        .view-btn {
+            background: #36B37E;
+            color: white;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        details {
+            margin-top: 16px;
+            font-size: 12px;
         }
 
         pre {
-            background: #f7f7f7;
-            padding: 8px;
-            border-radius: 4px;
+            background: #F7F8F9;
+            padding: 10px;
+            border-radius: 8px;
             overflow-x: auto;
+        }
+
+        #loading {
+            color: #0052CC;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h3>Issue Details</h3>
-    <p id="issueInfo">Loading issue details...</p>
-    <pre id="contextBox"></pre>
+    <h2>Issue Dashboard</h2>
+
+    <div id="loading">Loading issue details...</div>
+
+    <div id="content" style="display:none;">
+        <div class="info">
+            <span class="label">Issue:</span>
+            <span id="issueKey"></span>
+        </div>
+
+        <div class="info">
+            <span class="label">Project:</span>
+            <span id="projectKey" class="badge project"></span>
+        </div>
+
+        <div class="info">
+            <span class="label">Type:</span>
+            <span id="issueType"></span>
+        </div>
+
+        <div class="info">
+            <span class="label">Status:</span>
+            <span id="status" class="badge status"></span>
+        </div>
+
+        <div class="buttons">
+            <button class="refresh-btn" onclick="loadIssue()">Refresh</button>
+            <button class="view-btn" onclick="openIssue()">Open Issue</button>
+        </div>
+
+        <details>
+            <summary>View Context</summary>
+            <pre id="contextBox"></pre>
+        </details>
+    </div>
 </div>
 
 <script>
-    console.log("Bridge object:", window.AdaptavistBridge);
-    console.log("Context:", window.AdaptavistBridgeContext);
+    let currentContext = {};
 
-    // Show context first
-    document.getElementById("contextBox").innerText =
-        JSON.stringify(window.AdaptavistBridgeContext.context, null, 2);
+    function getContext() {
+        const params = new URLSearchParams(window.location.search);
+        const contextParam = params.get("context");
 
-    // Fetch issue details dynamically
-    AdaptavistBridge.request({
-        url: `/rest/api/2/issue/${AdaptavistBridgeContext.context.issueKey}`,
-        type: 'GET'
-    })
-    .then(issue => {
-        console.log("Issue response:", issue);
+        if (contextParam) {
+            return JSON.parse(contextParam);
+        }
+        return {};
+    }
 
-        document.getElementById("issueInfo").innerText =
-            `${issue.key} is a ${issue.fields.issuetype.name} currently in status "${issue.fields.status.name}"`;
-    })
-    .catch(error => {
-        console.error("API Error:", error);
-        document.getElementById("issueInfo").innerText =
-            "Unable to fetch issue details.";
-    });
+    function loadIssue() {
+        currentContext = getContext();
+
+        document.getElementById("contextBox").innerText =
+            JSON.stringify(currentContext, null, 2);
+
+        if (!currentContext.issueKey) {
+            document.getElementById("loading").innerText =
+                "Issue key not found.";
+            return;
+        }
+
+        AdaptavistBridge.request({
+            url: `/rest/api/2/issue/${currentContext.issueKey}`,
+            type: 'GET'
+        })
+        .then(issue => {
+            document.getElementById("loading").style.display = "none";
+            document.getElementById("content").style.display = "block";
+
+            document.getElementById("issueKey").innerText = issue.key;
+            document.getElementById("projectKey").innerText =
+                issue.fields.project.key;
+            document.getElementById("issueType").innerText =
+                issue.fields.issuetype.name;
+            document.getElementById("status").innerText =
+                issue.fields.status.name;
+        })
+        .catch(error => {
+            console.error(error);
+            document.getElementById("loading").innerText =
+                "Unable to fetch issue.";
+        });
+    }
+
+    function openIssue() {
+        if (currentContext.issueKey) {
+            window.open(`/browse/${currentContext.issueKey}`, "_blank");
+        }
+    }
+
+    loadIssue();
 </script>
 
 </body>
