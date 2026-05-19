@@ -48,6 +48,18 @@
         console.log("Enter in func ")
         document.getElementById("sta").innerText=
             "searching..."
+
+        if (!issueSummary) {
+            alert("Issue data not loaded yet");
+            return;
+          }
+        
+          const query = encodeURIComponent(issueSummary);
+        
+          const confluenceUrl =
+            `https://jadhavvaishnavi.atlassian.net/wiki/dosearchsite.action?query=${query}`;
+        
+          window.open(confluenceUrl, "_blank");
     }
 </script>
 
