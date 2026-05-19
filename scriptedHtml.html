@@ -9,8 +9,9 @@
 <body>
 
 <div>
-    <p>Search Related Documents in confluence</p>
+    <p id="status">Search Related Documents in confluence</p>
     <button id="searchConfluence">Search Confluence Docs</button>
+    
 </div>
 
 <script>
@@ -31,9 +32,6 @@
         issuesummary=issue.fields.summary;
         console.log("Issue response:", issue);
         console.log("Issue Summary : ",issuesummary)
-     
-        document.getElementById("status").innerText =
-            ` Ready ${issue.key}`;
     })
     .catch(error => {
         console.error("API Error:", error);
