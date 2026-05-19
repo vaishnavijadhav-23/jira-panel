@@ -18,6 +18,7 @@
 
     let issuekey;
     let issuesummary;
+    let baseurl;
 
     const baseUrl = window.location.origin;
     console.log("baseUrl : ",baseUrl)
@@ -30,7 +31,9 @@
         type: 'GET'
     })
     .then(issue => {
-
+       
+        const jiraBaseUrl = issue.self.split("/rest/api")[0];
+        console.log("BaseUrl : ",jiraBaseUrl)
         issuekey=issue.key;
         issuesummary=issue.fields.summary;
         console.log("Issue response:", issue);
@@ -42,6 +45,7 @@
             "Unable to fetch issue details.";
     });
 
+    
    document.getElementById("searchConfluence").addEventListener("click", () => {
   const searchUrl = `https://jadhavvaishnavi.atlassian.net/wiki/search?text=${encodeURIComponent(issuesummary)}`;
   window.open(searchUrl, "_blank");
