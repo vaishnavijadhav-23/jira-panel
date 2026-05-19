@@ -1,5 +1,5 @@
 const context=window.AdaptavistBridgeContext.context;
-console.log("Context : ",window.AdaptavistBridgeContext)
+console.log("Context : ",window.AdaptavistBridge)
 
 console.log("Bridge Context:", AdaptavistBridgeContext.context);
 
