@@ -10,7 +10,7 @@
 
 <div>
     <p>Search Related Documents in confluence</p>
-    <button class="btn">Search Confluence Docs</button>
+    <button onclick="searchConfluence()" class="btn">Search Confluence Docs</button>
     
     <p id="status">Loading issue details...</p>
 </div>
@@ -39,9 +39,14 @@
     })
     .catch(error => {
         console.error("API Error:", error);
-        document.getElementById("issueInfo").innerText =
+        document.getElementById("status").innerText =
             "Unable to fetch issue details.";
     });
+
+    function searchConfluence(){
+        document.getElementById("status").innerText=
+            "searching..."
+    }
 </script>
 
 </body>
