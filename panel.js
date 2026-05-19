@@ -1,20 +1,34 @@
-const context=window.AdaptavistBridgeContext.context;
-console.log("Context : ",window.AdaptavistBridge)
-console.log("Bridge Context : ",window.AdaptavistBridgeContext)
+// Log the current context to console for debugging
+console.log('Context:', AdaptavistBridgeContext.context);
 
-console.log("Bridge Context:", AdaptavistBridgeContext.context);
+const context = AdaptavistBridgeContext.context;
 
+// Fetch Space info using spaceId from context
 AdaptavistBridge.request({
-  url: `/rest/api/2/issue/${AdaptavistBridgeContext.context.issueKey}`,
+  url: `/wiki/api/v2/spaces/${context.spaceId}`,
   type: 'GET'
 })
-  
-.then(issue => {
-  document.getElementById("issueInfo").innerText =
-   `${issue.key}`;
+.then(space => {
+  console.log('Space data:', space);
+  document.getElementById('spaceName').textContent =
+    `Space: ${space.name} (Key: ${space.key})`;
 })
 .catch(err => {
-  console.error("Error fetching issue:", err);
-  document.getElementById("issueInfo").innerText = "Unable to load issue details.";
+  console.error('Error fetching space:', err);
 });
 
+// Fetch Page info using pageId from context (if available)
+if (context.pageId) {
+  AdaptavistBridge.request({
+    url: `/wiki/api/v2/pages/${context.pageId}`,
+    type: 'GET'
+  })
+  .then(page => {
+    console.log('Page data:', page);
+    document.getElementById('pageInfo').textContent =
+      `Page: ${page.title} (Version: ${context.pageVersion})`;
+  })
+  .catch(err => {
+    console.error('Error fetching page:', err);
+  });
+}
