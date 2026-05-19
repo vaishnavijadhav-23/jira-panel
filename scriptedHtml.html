@@ -11,7 +11,7 @@
 <div>
     <p>Search Related Documents in confluence</p>
     <button onclick="searchConfluence()" class="btn">Search Confluence Docs</button>
-    
+    <button>..</button>
     <p id="status">Loading issue details...</p>
 </div>
 
@@ -51,9 +51,9 @@
         if (!issueSummary) {
             alert("Issue data not loaded yet");
             return;
-          }
+        }
         
-          const query = encodeURIComponent(issueSummary);
+        const query = encodeURIComponent(issueSummary);
         
           const confluenceUrl =
             `https://jadhavvaishnavi.atlassian.net/wiki/dosearchsite.action?query=${query}`;
