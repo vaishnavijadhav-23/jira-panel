@@ -30,7 +30,7 @@
     .then(issue => {
 
         issuekey=issue.key;
-        issuesummary=issue.summary;
+        issuesummary=issue.fields.summary;
         console.log("Issue response:", issue);
      
         document.getElementById("status").innerText =
