@@ -50,28 +50,15 @@
 </div>
 
 <script>
-    console.log("Bridge object:", window.AdaptavistBridge);
-    console.log("Context:", window.AdaptavistBridgeContext);
+   console.log(AdaptavistBridgeContext.context);
 
-    // Show context first
-    document.getElementById("contextBox").innerText =
-        JSON.stringify(window.AdaptavistBridgeContext.context, null, 2);
-
-    // Fetch issue details dynamically
-    AdaptavistBridge.request({
-        url: `/rest/api/2/issue/${AdaptavistBridgeContext.context.issueKey}`,
-        type: 'GET'
-    })
+AdaptavistBridge.request({
+    url: `/rest/api/2/issue/${AdaptavistBridgeContext.context.issueKey}`,
+    type: 'GET'
+})
     .then(issue => {
-        console.log("Issue response:", issue);
-
-        document.getElementById("issueInfo").innerText =
-            `${issue.key} is a ${issue.fields.issuetype.name} currently in status "${issue.fields.status.name}"`;
-    })
-    .catch(error => {
-        console.error("API Error:", error);
-        document.getElementById("issueInfo").innerText =
-            "Unable to fetch issue details.";
+        console.log('issue', issue)
+        document.getElementById("issueType").value = `${issue.key} is a ${issue.fields.issuetype.name} in ${issue.fields.status.name}`;
     });
 </script>
 
