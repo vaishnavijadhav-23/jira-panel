@@ -9,7 +9,6 @@ AdaptavistBridge.request({
 })
   
 .then(issue => {
-  // Correct property: issue.fields.issuetype.name
   document.getElementById("issueInfo").innerText =
    `${issue.key} is a currently in status`;
 })
