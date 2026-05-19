@@ -1,55 +1,82 @@
-// The Adaptavist bridge in Jira uses AP (Atlassian Connect) directly
-console.log('AP object:', AP);
+window.addEventListener('load', function () {
 
-// Get Jira issue context using AP
-AP.context.getContext(function(context) {
-  console.log('AP Context:', JSON.stringify(context));
+  // Wait until AdaptavistBridge is fully ready
+  function waitForBridge(retries) {
+    if (retries <= 0) {
+      document.getElementById('issueKey').textContent =
+        'Bridge failed to load after multiple retries.';
+      return;
+    }
 
-  const issueKey = context.jira && context.jira.issue && context.jira.issue.key;
-  const issueId  = context.jira && context.jira.issue && context.jira.issue.id;
-
-  console.log('Issue Key:', issueKey);
-  console.log('Issue Id:', issueId);
-
-  if (issueKey) {
-    document.getElementById('issueKey').textContent = 'Issue Key: ' + issueKey;
-
-    // Now fetch full issue data
-    AP.request({
-      url: `/rest/api/3/issue/${issueKey}`,
-      type: 'GET',
-      success: function(response) {
-        const issue = JSON.parse(response);
-        console.log('Issue Data:', issue);
-
-        document.getElementById('issueKey').textContent =
-          `Issue: ${issue.key}`;
-        document.getElementById('issueType').textContent =
-          `Type: ${issue.fields.issuetype.name}`;
-        document.getElementById('issueSummary').textContent =
-          `Summary: ${issue.fields.summary}`;
-        document.getElementById('issueStatus').textContent =
-          `Status: ${issue.fields.status.name}`;
-        document.getElementById('issuePriority').textContent =
-          `Priority: ${issue.fields.priority ? issue.fields.priority.name : 'None'}`;
-        document.getElementById('issueAssignee').textContent =
-          `Assignee: ${issue.fields.assignee ? issue.fields.assignee.displayName : 'Unassigned'}`;
-        document.getElementById('issueReporter').textContent =
-          `Reporter: ${issue.fields.reporter ? issue.fields.reporter.displayName : 'Unknown'}`;
-        document.getElementById('issueCreated').textContent =
-          `Created: ${new Date(issue.fields.created).toLocaleDateString()}`;
-        document.getElementById('issueUpdated').textContent =
-          `Updated: ${new Date(issue.fields.updated).toLocaleDateString()}`;
-      },
-      error: function(err) {
-        console.error('API Error:', err);
-        document.getElementById('issueKey').textContent =
-          'API Error: ' + JSON.stringify(err);
-      }
-    });
-
-  } else {
-    document.getElementById('issueKey').textContent =
-      'No issue key found. AP Context: ' + JSON.stringify(context);
+    if (
+      typeof window.AdaptavistBridge !== 'undefined' &&
+      typeof window.AdaptavistBridgeContext !== 'undefined'
+    ) {
+      console.log('Bridge ready!');
+      console.log('Context:', JSON.stringify(window.AdaptavistBridgeContext.context));
+      startApp();
+    } else {
+      console.log('Bridge not ready, retrying... ' + retries);
+      setTimeout(function () {
+        waitForBridge(retries - 1);
+      }, 500);
+    }
   }
-});x
+
+  function startApp() {
+    const context = window.AdaptavistBridgeContext.context;
+    console.log('Raw context:', context);
+
+    // Log every property
+    for (var key in context) {
+      console.log(key + ' = ' + context[key]);
+    }
+
+    const identifier =
+      context.entityKey ||
+      context.contentId ||
+      context.pageId ||
+      context.spaceId;
+
+    if (!identifier) {
+      document.getElementById('issueKey').textContent =
+        'Context loaded but empty. Keys: ' + Object.keys(context).join(', ');
+      return;
+    }
+
+    // Make API request using bridge
+    window.AdaptavistBridge.request({
+      url: `/rest/api/3/issue/${identifier}`,
+      type: 'GET'
+    })
+    .then(function (data) {
+      console.log('Response:', data);
+
+      document.getElementById('issueKey').textContent =
+        'Issue: ' + (data.key || identifier);
+      document.getElementById('issueSummary').textContent =
+        'Summary: ' + (data.fields ? data.fields.summary : '-');
+      document.getElementById('issueStatus').textContent =
+        'Status: ' + (data.fields ? data.fields.status.name : '-');
+      document.getElementById('issueType').textContent =
+        'Type: ' + (data.fields ? data.fields.issuetype.name : '-');
+      document.getElementById('issuePriority').textContent =
+        'Priority: ' + (data.fields && data.fields.priority ? data.fields.priority.name : 'None');
+      document.getElementById('issueAssignee').textContent =
+        'Assignee: ' + (data.fields && data.fields.assignee ? data.fields.assignee.displayName : 'Unassigned');
+      document.getElementById('issueReporter').textContent =
+        'Reporter: ' + (data.fields && data.fields.reporter ? data.fields.reporter.displayName : 'Unknown');
+      document.getElementById('issueCreated').textContent =
+        'Created: ' + (data.fields ? new Date(data.fields.created).toLocaleDateString() : '-');
+      document.getElementById('issueUpdated').textContent =
+        'Updated: ' + (data.fields ? new Date(data.fields.updated).toLocaleDateString() : '-');
+    })
+    .catch(function (err) {
+      console.error('Request error:', err);
+      document.getElementById('issueKey').textContent =
+        'Request failed: ' + JSON.stringify(err);
+    });
+  }
+
+  waitForBridge(20);
+});
