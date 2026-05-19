@@ -31,13 +31,15 @@
         type: 'GET'
     })
     .then(issue => {
-       
+       baseurl=issue.self;
         const jiraBaseUrl = issue.self.split("/rest/api")[0];
-        console.log("BaseUrl : ",jiraBaseUrl)
         issuekey=issue.key;
         issuesummary=issue.fields.summary;
         console.log("Issue response:", issue);
         console.log("Issue Summary : ",issuesummary)
+        console.log("BaseUrl : ",jiraBaseUrl)
+        
+
     })
     .catch(error => {
         console.error("API Error:", error);
