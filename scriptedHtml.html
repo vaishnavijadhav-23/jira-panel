@@ -18,7 +18,7 @@
 
     let issuekey;
     let issuesummary;
-    let baseurl;
+    let jiraBaseUrl;
  
     console.log("Bridge object:", window.AdaptavistBridge);
     console.log("Context:", window.AdaptavistBridgeContext);
@@ -29,7 +29,7 @@
     })
     .then(issue => {
        baseurl=issue.self;
-        const jiraBaseUrl = issue.self.split("/rest/api")[0];
+        jiraBaseUrl = issue.self.split("/rest/api")[0];
         issuekey=issue.key;
         issuesummary=issue.fields.summary;
         console.log("Issue response:", issue);
