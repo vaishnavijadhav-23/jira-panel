@@ -1,72 +1,31 @@
-// Step 1: Try to get issueKey from parent window URL
-// Jira URL format: https://yoursite.atlassian.net/browse/PROJECT-123
-function getIssueKeyFromURL() {
-  try {
-    // Try parent window URL (script runs in iframe)
-    const parentURL = window.parent.location.href;
-    const match = parentURL.match(/\/browse\/([A-Z]+-\d+)/);
-    if (match) return match[1];
-  } catch (e) {
-    console.log('Cannot access parent URL:', e);
-  }
+// Poll until context has issueKey populated
+function waitForContext(callback, retries) {
+  retries = retries || 30;
 
-  try {
-    // Try current window URL as fallback
-    const currentURL = window.location.href;
-    const match = currentURL.match(/\/browse\/([A-Z]+-\d+)/);
-    if (match) return match[1];
-  } catch (e) {
-    console.log('Cannot access current URL:', e);
-  }
+  var issueKey = AdaptavistBridgeContext.context
+    && AdaptavistBridgeContext.context.issueKey;
 
-  // Try document referrer
-  try {
-    const referrer = document.referrer;
-    const match = referrer.match(/\/browse\/([A-Z]+-\d+)/);
-    if (match) return match[1];
-  } catch (e) {
-    console.log('Cannot access referrer:', e);
-  }
-
-  return null;
-}
-
-// Step 2: Also try context (might work sometimes)
-function getIssueKey() {
-  const ctxKey = AdaptavistBridgeContext.context.issueKey
-    || AdaptavistBridgeContext.context.entityKey;
-
-  if (ctxKey) {
-    console.log('Got key from context:', ctxKey);
-    return ctxKey;
-  }
-
-  const urlKey = getIssueKeyFromURL();
-  if (urlKey) {
-    console.log('Got key from URL:', urlKey);
-    return urlKey;
-  }
-
-  return null;
-}
-
-// Step 3: Load data
-function loadIssue() {
-  const issueKey = getIssueKey();
-
-  if (!issueKey) {
+  if (issueKey) {
+    console.log('issueKey ready:', issueKey);
+    callback(issueKey);
+  } else if (retries > 0) {
+    setTimeout(function () {
+      waitForContext(callback, retries - 1);
+    }, 300);
+  } else {
     document.getElementById('issueKey').textContent =
-      'Cannot find issue key. Make sure you are on a Jira issue page.';
-    return;
+      'Timed out waiting for issue context.';
   }
+}
 
+function loadIssue(issueKey) {
   document.getElementById('issueKey').textContent = 'Loading ' + issueKey + '...';
 
   AdaptavistBridge.request({
-    url: `/rest/api/2/issue/${issueKey}`,
+    url: '/rest/api/2/issue/' + issueKey,
     type: 'GET'
   })
-  .then(function(issue) {
+  .then(function (issue) {
     console.log('Issue loaded:', issue);
 
     document.getElementById('issueKey').textContent =
@@ -90,15 +49,14 @@ function loadIssue() {
     document.getElementById('issueUpdated').textContent =
       'Updated: ' + new Date(issue.fields.updated).toLocaleDateString();
   })
-  .catch(function(err) {
+  .catch(function (err) {
     console.error('API Error:', err);
     document.getElementById('issueKey').textContent =
       'API Error: ' + JSON.stringify(err);
   });
 }
 
-// Wait for page to fully load then run
-window.addEventListener('load', function() {
-  console.log('Bridge context:', AdaptavistBridgeContext.context);
-  loadIssue();
+// Start polling as soon as page loads
+window.addEventListener('load', function () {
+  waitForContext(loadIssue);
 });
