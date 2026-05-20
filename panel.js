@@ -6,5 +6,5 @@ AdaptavistBridge.request({
 })
     .then(issue => {
         console.log('issue', issue)
-        document.getElementById("issueType").value = `${issue.key} is a ${issue.fields.issuetype.name} in ${issue.fields.status.name}`;
+        document.getElementById("issueType").value = `${issue.key} is a in ${issue.fields.status.name}`;
     });
