@@ -1,4 +1,4 @@
-console.log('Context:', AdaptavistBridgeContext.context);
+console.log("Context: ", AdaptavistBridgeContext.context);
 
 const issueKey = AdaptavistBridgeContext.context.issueKey;
 const projectKey = AdaptavistBridgeContext.context.projectKey;
