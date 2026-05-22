@@ -1,5 +1,5 @@
 console.log("Fragment Loaded");
-
+console.log("Context:", window.AdaptavistBridgeContext);
 
 
 document.getElementById("btn").addEventListener("click", () => {
