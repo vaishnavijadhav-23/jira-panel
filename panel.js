@@ -5,7 +5,8 @@
         type: 'GET'
     })
     .then(issue => {
-      
+        document.getElementById("status").innerText =
+            "issue key : ${issue.key}";
         console.log("Issue response:", issue);
     })
     .catch(error => {
