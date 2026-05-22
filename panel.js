@@ -1,6 +1,6 @@
-document.getElementById("btn").addEventListener("click", function () {
+document.getElementById("btn").addEventListener("click", async function () {
 
-  const context = AdaptavistBridgeContext.context;
+  const context = await AdaptavistBridgeContext.context;  // ← await this!
 
   console.log("Context:", context);
 
