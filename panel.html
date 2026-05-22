@@ -3,53 +3,12 @@
 <head>
     <title>Issue Info Panel</title>
     <link rel="stylesheet" href="https://vaishnavijadhav-23.github.io/jira-panel/panel.css">
-    <!-- ✅ Correct bridge URL from official docs -->
-    <script src="https://assets.hydrogen.sagittarius.connect.product.adaptavist.com/public/js/bridge.js"></script>
 </head>
 <body>
 <div>
     <h3>Issue Info</h3>
-    <p id="issueInfo">Loading...</p>
-    <p id="status"></p>
+    <p id="status">Loading...</p>
     <button id="searchConfluence" disabled>Search Confluence Docs</button>
 </div>
-
-<script>
-    // ✅ Inline script - guaranteed to run after bridge.js loads
-    console.log("Context:", AdaptavistBridgeContext.context);
-
-    var issueKey = AdaptavistBridgeContext.context.issueKey;
-
-    AdaptavistBridge.request({
-        url: "/rest/api/2/issue/" + issueKey + "?fields=summary,status,assignee",
-        type: "GET"
-    })
-    .then(function(issue) {
-        console.log("Issue:", issue);
-
-        if (issue.errorMessages) {
-            document.getElementById("status").innerText = issue.errorMessages[0];
-            return;
-        }
-
-        var issueSummary = issue.fields.summary;
-        var jiraBaseUrl = issue.self.split("/rest/api")[0];
-
-        document.getElementById("status").innerText =
-            "Issue: " + issue.key + " - " + issueSummary;
-
-        document.getElementById("searchConfluence").disabled = false;
-
-        document.getElementById("searchConfluence").addEventListener("click", function() {
-            var searchUrl = jiraBaseUrl + "/wiki/search?text=" +
-                encodeURIComponent(issueSummary);
-            window.open(searchUrl, "_blank");
-        });
-    })
-    .catch(function(error) {
-        console.error("API Error:", error);
-        document.getElementById("status").innerText = "Unable to fetch issue details.";
-    });
-</script>
 </body>
-</html>s
+</html>
