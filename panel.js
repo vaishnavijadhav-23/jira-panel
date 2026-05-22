@@ -1,42 +1,28 @@
-function waitForContext(callback, retries, interval) {
-    retries = retries === undefined ? 30 : retries;
-    interval = interval === undefined ? 300 : interval;
-
-    var ctx = window.AdaptavistBridgeContext;
-    console.log("Checking context... retries left:", retries, ctx);
-
-    if (ctx && ctx.context && ctx.context.issueKey) {
-        console.log("Context ready:", ctx);
-        callback(ctx.context.issueKey);
-    } else if (retries > 0) {
-        setTimeout(function() {
-            waitForContext(callback, retries - 1, interval);
-        }, interval);
-    } else {
-        console.error("Context never became available");
-        document.getElementById("status").innerText = "Context unavailable.";
-    }
+function getContextFromUrl() {
+    var params = new URLSearchParams(window.location.search);
+    console.log("Full URL:", window.location.href);
+    console.log("All URL params:", Object.fromEntries(params));
+    return {
+        issueKey: params.get("issueKey") || params.get("issue.key") || params.get("context.issueKey"),
+        projectKey: params.get("projectKey") || params.get("project.key")
+    };
 }
 
-waitForContext(function(issueKey) {
-    console.log("Using issueKey:", issueKey);
+var ctx = getContextFromUrl();
+console.log("Context from URL:", ctx);
 
+if (!ctx.issueKey) {
+    document.getElementById("status").innerText = "No issue key in URL.";
+} else {
     AdaptavistBridge.request({
-        url: "/rest/api/2/issue/" + issueKey + "?fields=summary,status,assignee",
+        url: "/rest/api/2/issue/" + ctx.issueKey + "?fields=summary,status,assignee",
         type: "GET"
     })
     .then(function(issue) {
         console.log("Raw issue response:", JSON.stringify(issue));
 
-        if (issue.errorMessages && issue.errorMessages.length > 0) {
-            console.error("Jira API error:", issue.errorMessages);
+        if (issue.errorMessages) {
             document.getElementById("status").innerText = issue.errorMessages[0];
-            return;
-        }
-
-        if (!issue.fields) {
-            console.error("No fields in response:", issue);
-            document.getElementById("status").innerText = "Unexpected response format.";
             return;
         }
 
@@ -57,4 +43,4 @@ waitForContext(function(issueKey) {
         console.error("API Error:", error);
         document.getElementById("status").innerText = "Unable to fetch issue details.";
     });
-});
+}
