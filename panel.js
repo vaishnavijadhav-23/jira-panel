@@ -1,10 +1,21 @@
-console.log(AdaptavistBridgeContext.context);
+console.log("Fragment Loaded");
 
-AdaptavistBridge.request({
-    url: `/rest/api/2/issue/${AdaptavistBridgeContext.context.issueKey}`,
-    type: 'GET'
-})
+
+
+document.getElementById("btn").addEventListener("click", () => {
+
+    const issueKey = AdaptavistBridgeContext.context.issueKey;
+
+    document.getElementById("issueKey").innerText =
+        "Current Issue: " + issueKey;
+
+    AdaptavistBridge.request({
+        url: `/rest/api/2/issue/${issueKey}`,
+        type: 'GET'
+    })
     .then(issue => {
-        console.log('issue', issue)
-        document.getElementById("issueType").value = `${issue.key} `;
+        alert(
+          `${issue.key} : ${issue.fields.summary}`
+        );
     });
+});
