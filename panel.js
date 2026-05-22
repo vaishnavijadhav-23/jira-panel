@@ -1,46 +1,52 @@
-function getContextFromUrl() {
-    var params = new URLSearchParams(window.location.search);
-    console.log("Full URL:", window.location.href);
-    console.log("All URL params:", Object.fromEntries(params));
-    return {
-        issueKey: params.get("issueKey") || params.get("issue.key") || params.get("context.issueKey"),
-        projectKey: params.get("projectKey") || params.get("project.key")
-    };
-}
+document.addEventListener("DOMContentLoaded", function() {
+    setTimeout(function() {
+        console.log("Context after DOM ready:", window.AdaptavistBridgeContext);
 
-var ctx = getContextFromUrl();
-console.log("Context from URL:", ctx);
+        var ctx = window.AdaptavistBridgeContext;
 
-if (!ctx.issueKey) {
-    document.getElementById("status").innerText = "No issue key in URL.";
-} else {
-    AdaptavistBridge.request({
-        url: "/rest/api/2/issue/" + ctx.issueKey + "?fields=summary,status,assignee",
-        type: "GET"
-    })
-    .then(function(issue) {
-        console.log("Raw issue response:", JSON.stringify(issue));
-
-        if (issue.errorMessages) {
-            document.getElementById("status").innerText = issue.errorMessages[0];
+        if (!ctx || !ctx.context || !ctx.context.issueKey) {
+            document.getElementById("status").innerText = "Context unavailable.";
+            console.error("Still no context:", ctx);
             return;
         }
 
-        var issueSummary = issue.fields.summary;
-        var jiraBaseUrl = issue.self.split("/rest/api")[0];
+        var issueKey = ctx.context.issueKey;
+        console.log("Using issueKey:", issueKey);
 
-        document.getElementById("status").innerText =
-            "Issue: " + issue.key + " - " + issueSummary;
+        AdaptavistBridge.request({
+            url: "/rest/api/2/issue/" + issueKey + "?fields=summary,status,assignee",
+            type: "GET"
+        })
+        .then(function(issue) {
+            console.log("Raw issue response:", JSON.stringify(issue));
 
-        document.getElementById("searchConfluence").disabled = false;
+            if (issue.errorMessages) {
+                document.getElementById("status").innerText = issue.errorMessages[0];
+                return;
+            }
 
-        document.getElementById("searchConfluence").addEventListener("click", function() {
-            var searchUrl = jiraBaseUrl + "/wiki/search?text=" + encodeURIComponent(issueSummary);
-            window.open(searchUrl, "_blank");
+            if (!issue.fields) {
+                document.getElementById("status").innerText = "Unexpected response.";
+                return;
+            }
+
+            var issueSummary = issue.fields.summary;
+            var jiraBaseUrl = issue.self.split("/rest/api")[0];
+
+            document.getElementById("status").innerText =
+                "Issue: " + issue.key + " - " + issueSummary;
+
+            document.getElementById("searchConfluence").disabled = false;
+
+            document.getElementById("searchConfluence").addEventListener("click", function() {
+                var searchUrl = jiraBaseUrl + "/wiki/search?text=" + encodeURIComponent(issueSummary);
+                window.open(searchUrl, "_blank");
+            });
+        })
+        .catch(function(error) {
+            console.error("API Error:", error);
+            document.getElementById("status").innerText = "Unable to fetch issue details.";
         });
-    })
-    .catch(function(error) {
-        console.error("API Error:", error);
-        document.getElementById("status").innerText = "Unable to fetch issue details.";
-    });
-}
+
+    }, 500);
+});
