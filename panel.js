@@ -1,6 +1,4 @@
-// ✅ Correct - waits for bridge + context to be fully ready
-AdaptavistBridge.onReady(() => {
-    console.log("Context:", window.AdaptavistBridgeContext);
+console.log("Context:", window.AdaptavistBridgeContext);
 
     const issueKey = AdaptavistBridgeContext.context.issueKey;
 
@@ -27,4 +25,3 @@ AdaptavistBridge.onReady(() => {
         document.getElementById("status").innerText =
             "Unable to fetch issue details.";
     });
-});
