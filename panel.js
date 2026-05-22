@@ -7,7 +7,6 @@ console.log("Context:", window.AdaptavistBridgeContext);
         type: 'GET'
     })
     .then(issue => {
-        const jiraBaseUrl = issue.self.split("/rest/api")[0];
         const issueSummary = issue.fields.summary;
 
         document.getElementById("status").innerText =
