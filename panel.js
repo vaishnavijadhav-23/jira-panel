@@ -1,17 +1,30 @@
- console.log("Context:", window.AdaptavistBridgeContext);
-   
-    AdaptavistBridge.request({
-        url: `/rest/api/2/issue/${AdaptavistBridgeContext.context.issueKey}`,
-        type: 'GET'
-    })
-    .then(issue => {
-        document.getElementById("status").innerText =
-            `issue key : ${issue.key}`;
-        console.log("Issue response:", issue);
-    })
-    .catch(error => {
-        console.error("API Error:", error);
-        document.getElementById("status").innerText =
-            "Unable to fetch issue details.";
-    });
-    
+// ✅ Correct - waits for bridge + context to be fully ready
+AdaptavistBridge.onReady(() => {
+    console.log("Context:", window.AdaptavistBridgeContext);
+
+    const issueKey = AdaptavistBridgeContext.context.issueKey;
+
+    AdaptavistBridge.request({
+        url: `/rest/api/2/issue/${issueKey}`,
+        type: 'GET'
+    })
+    .then(issue => {
+        const jiraBaseUrl = issue.self.split("/rest/api")[0];
+        const issueSummary = issue.fields.summary;
+
+        document.getElementById("status").innerText =
+            `Issue: ${issue.key} — ${issueSummary}`;
+
+        document.getElementById("searchConfluence").disabled = false;
+
+        document.getElementById("searchConfluence").addEventListener("click", () => {
+            const searchUrl = `${jiraBaseUrl}/wiki/search?text=${encodeURIComponent(issueSummary)}`;
+            window.open(searchUrl, "_blank");
+        });
+    })
+    .catch(error => {
+        console.error("API Error:", error);
+        document.getElementById("status").innerText =
+            "Unable to fetch issue details.";
+    });
+});
