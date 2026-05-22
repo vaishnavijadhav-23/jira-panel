@@ -12,8 +12,8 @@ AdaptavistBridge.request({
         return;
     }
 
-    var issueSummary = issue.fields.summary;
-    var jiraBaseUrl = issue.self.split("/rest/api")[0];
+    const issueSummary = issue.fields.summary;
+    const jiraBaseUrl = issue.self.split("/rest/api")[0];
 
     document.getElementById("status").innerText =
         "Issue: " + issue.key + " - " + issueSummary;
@@ -21,7 +21,7 @@ AdaptavistBridge.request({
     document.getElementById("searchConfluence").disabled = false;
 
     document.getElementById("searchConfluence").addEventListener("click", function() {
-        var searchUrl = jiraBaseUrl + "/wiki/search?text=" +
+        const searchUrl = jiraBaseUrl + "/wiki/search?text=" +
             encodeURIComponent(issueSummary);
         window.open(searchUrl, "_blank");
     });
