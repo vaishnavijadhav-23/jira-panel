@@ -1,7 +1,7 @@
 console.log("Context:", AdaptavistBridgeContext.context);
 
 AdaptavistBridge.request({
-    url: `/rest/api/2/issue/${AdaptavistBridgeContext.context.issueKey}?fields=summary,status,assignee`,
+    url: `/rest/api/2/issue/${AdaptavistBridgeContext.context.issueKey}`,
     type: 'GET'
 })
 .then(issue => {
