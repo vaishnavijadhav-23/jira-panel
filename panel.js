@@ -11,12 +11,6 @@ console.log("Context:", window.AdaptavistBridgeContext);
 
         document.getElementById("status").innerText =
             `Issue: ${issue.key} — ${issueSummary}`;
-
-        document.getElementById("searchConfluence").disabled = false;
-
-        document.getElementById("searchConfluence").addEventListener("click", () => {
-            const searchUrl = `${jiraBaseUrl}/wiki/search?text=${encodeURIComponent(issueSummary)}`;
-            window.open(searchUrl, "_blank");
         });
     })
     .catch(error => {
