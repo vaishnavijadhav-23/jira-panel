@@ -1,23 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Hello Fragment</title>
-
-  <link rel="stylesheet" href="https://vaishnavijadhav-23.github.io/jira-panel/panel.css">
-
-  <script src="https://assets.hydrogen.sagittarius.connect.product.adaptavist.com/public/js/latest/bridge.js"></script>
+    <title>Issue Info</title>
+    <link rel="stylesheet" href="https://vaishnavijadhav-23.github.io/jira-panel/panel.css">
 </head>
 <body>
-
 <div>
-  <h3>Issue Info</h3>
-  <p id="issueInfo">Loading...</p>
-   <p id="status"></p>
-  <button id="btn">Get Issue Details</button>
+    <h3>Issue Info</h3>
+    <p id="issueInfo">Loading...</p>
+    <p id="status"></p>
+    <button id="searchConfluence" disabled>Search Confluence Docs</button>
 </div>
 
-</div>
+<!-- Bridge must be first -->
+<script src="https://assets.hydrogen.sagittarius.connect.product.adaptavist.com/public/js/latest/bridge.js"></script>
 
-
+<!-- Your JS must be last -->
+<script src="https://vaishnavijadhav-23.github.io/jira-panel/panel.js"></script>
 </body>
 </html>
