@@ -1,19 +1,23 @@
-console.log("Fragment Loaded");
+document.getElementById("btn").addEventListener("click", async () => {
 
-console.log("Context:", window.AdaptavistBridgeContext);
+    try {
 
-document.getElementById("btn").addEventListener("click", () => {
+        // Get runtime context
+        const context = await AdaptavistBridge.getContext();
 
-    const issueKey = AdaptavistBridgeContext.context.issueKey;
+        console.log("Full Context:", context);
 
-    document.getElementById("issueKey").innerText =
-        "Current Issue: " + issueKey;
+        // Get issue key safely
+        const issueKey = context.extension.issue.key;
 
-    AdaptavistBridge.request({
-        url: `/rest/api/2/issue/DEV-1`,
-        type: 'GET'
-    })
-    .then(issue => {
+        document.getElementById("issueKey").innerText =
+            "Current Issue: " + issueKey;
+
+        // Fetch issue dynamically
+        const issue = await AdaptavistBridge.request({
+            url: `/rest/api/2/issue/${issueKey}`,
+            type: 'GET'
+        });
 
         console.log("Issue:", issue);
 
@@ -25,13 +29,10 @@ document.getElementById("btn").addEventListener("click", () => {
                 <p><b>Type:</b> ${issue.fields.issuetype.name}</p>
             </div>
         `;
-    })
-    .catch(error => {
+
+    } catch (error) {
 
         console.error("Error:", error);
 
-        document.getElementById("result").innerHTML = `
-            <p class="error">Failed to load issue</p>
-        `;
-    });
+    }
 });
