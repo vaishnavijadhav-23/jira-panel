@@ -10,7 +10,7 @@ document.getElementById("btn").addEventListener("click", () => {
         "Current Issue: " + issueKey;
 
     AdaptavistBridge.request({
-        url: `/rest/api/2/issue/${issueKey}`,
+        url: `/rest/api/2/issue/DEV-1`,
         type: 'GET'
     })
     .then(issue => {
