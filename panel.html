@@ -1,9 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta http-equiv="Content-Security-Policy"
-    content="connect-src 'self' https://vaishnavijadhav-23.github.io https://sentry.io https://*.sentry.io;">
-  <meta charset="UTF-8">
+     <meta http-equiv="Content-Security-Policy" 
+    content="
+      default-src 'self'; 
+      connect-src 'self' 
+        https://vaishnavijadhav-23.github.io 
+        https://*.adaptavist.com
+        https://*.csb.app;
+      script-src 'self' 
+        https://vaishnavijadhav-23.github.io
+        https://*.adaptavist.com
+        https://*.csb.app
+        'unsafe-inline';
+      style-src 'self' 
+        https://vaishnavijadhav-23.github.io 
+        'unsafe-inline';
+      frame-src 'self' 
+        https://*.adaptavist.com
+        https://*.csb.app;
+    ">
     <title>Issue Info Panel..</title>
 </head>
 <body>
